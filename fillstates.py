@@ -61,7 +61,7 @@ popdensity = {
     'Wyoming':      1.96,
     'Alaska':     0.42}
 
-def make_map(state_data = popdensity, title='') :
+def make_map(state_data = popdensity, title='Population Density') :
     """ Take in state-wise data in dictionary format and plot on map 
         of U.S.
     
@@ -99,16 +99,17 @@ def make_map(state_data = popdensity, title='') :
         # skip DC and Puerto Rico.
         if statename not in ['District of Columbia','Puerto Rico']:           
             pop = popdensity[statename]
-            # calling colormap with value between 0 and 1 returns
-            # rgba value.  Invert color range (hot colors are high
-            # population), take sqrt root to spread out colors more.
-            colors[statename] = cmap(1.-np.sqrt((pop-vmin)/(vmax-vmin)))[:3]
+            # calling colormap with value between 0 and 1 returns rgba value.  
+            colors[statename] = cmap(((pop-vmin)/(vmax-vmin)))[:3]
         statenames.append(statename)
     # cycle through state names, color each one.
     ax = plt.gca() # get current axes instance
     for nshape,seg in enumerate(m.states):
         # skip DC and Puerto Rico.
         if statenames[nshape] not in ['District of Columbia','Puerto Rico']:
+            # To plot Alaska and Hawaii, I've modified the approach of 
+            # MomoPP:
+            # http://stackoverflow.com/questions/39742305/how-to-use-basemap-python-to-plot-us-with-50-states
             if statenames[nshape] == 'Alaska':
             # Alaska is too big. Scale it down to 35% first, then transate it. 
                 seg = list(map(lambda (x,y): (0.35*x + 1000000, 0.35*y-1300000), seg))
@@ -122,7 +123,7 @@ def make_map(state_data = popdensity, title='') :
     tmp=np.linspace(vmin, vmax,100)
     im = plt.imshow(np.array([tmp, tmp]), cmap=cmap)
     plt.colorbar(im)
-    plt.tight_layout()
+    plt.savefig(title + '.png')
     #plt.axis([])
     plt.show()
 

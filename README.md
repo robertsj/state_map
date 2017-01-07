@@ -12,6 +12,10 @@ available from the USDA:
 
 https://infosys.ars.usda.gov/svn/code/weps1/trunk/weps.install/db/gis/st99_d00/
 
+To get Alaska and Hawaii on the same map, I adapted the approach of MomoPP:
+
+http://stackoverflow.com/questions/39742305/how-to-use-basemap-python-to-plot-us-with-50-states
+
 To run, you'll need to install basemap (which, if you use conda, is as 
 easy as conda install basemap).
 
