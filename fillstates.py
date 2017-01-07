@@ -8,7 +8,7 @@ from mpl_toolkits.basemap import Basemap as Basemap
 from matplotlib.colors import rgb2hex
 from matplotlib.patches import Polygon
 from matplotlib.colors import LinearSegmentedColormap
-
+ 
 popdensity = {
     'New Jersey':  438.00,
     'Rhode Island':   387.35,
@@ -64,7 +64,6 @@ popdensity = {
 def make_map(state_data = popdensity, title='Population Density') :
     """ Take in state-wise data in dictionary format and plot on map 
         of U.S.
-    
     """
     plt.figure(1,figsize=(9,5))
     # Lambert Conformal map of lower 48 states.
@@ -75,19 +74,27 @@ def make_map(state_data = popdensity, title='Population Density') :
     # http://www.census.gov/geo/www/cob/st2000.html
     shp_info = m.readshapefile('st99_d00','states',drawbounds=True)
     # population density by state from
-    # http://en.wikipedia.org/wiki/List_of_U.S._states_by_population_density
+    # hplttp://en.wikipedia.org/wiki/List_of_U.S._states_by_population_density
  
     # Segmented color scheme ranging from blue to red
-    cdict1 = {'red':   ((0.0, 0.0, 0.0),
-                       (1.0, 1.0, 1.0)),
-    
-             'green': ((0.0, 0.0, 0.0),
-                       (1.0, 0.0, 0.0)),
-    
-             'blue':  ((0.0, 1.0, 1.0),
-                       (1.0, 0.0, 0.0))
-            }
-    cmap = LinearSegmentedColormap('BlueRed1', cdict1)
+    b2r = {'red':   ((0.0, 0.0, 0.0),
+                     (1.0, 1.0, 1.0)),
+           'green': ((0.0, 0.0, 0.0),
+                     (1.0, 0.0, 0.0)),
+           'blue':  ((0.0, 1.0, 1.0),
+                     (1.0, 0.0, 0.0))
+          }
+    # modified version with slightly better purple emphasis
+    bpr = {'red':   ((0.0, 0.0, 0.0),
+                     (0.25, 0.5, 0.5),
+                     (1.0, 1.0, 1.0)),
+           'green': ((0.0, 0.0, 0.0),
+                     (1.0, 0.0, 0.0)),
+            'blue': ((0.0, 1.0, 1.0),
+                     (0.75, 0.5, 0.5),
+                     (1.0, 0.0, 0.0))
+          }         
+    cmap = LinearSegmentedColormap('BlueRed1', bpr)
   
     # choose a color for each state based on state-wise data.
     colors={}
@@ -115,6 +122,8 @@ def make_map(state_data = popdensity, title='Population Density') :
                 seg = list(map(lambda (x,y): (0.35*x + 1000000, 0.35*y-1300000), seg))
             if statenames[nshape] == 'Hawaii':
                 seg = list(map(lambda (x,y): (x + 5100000, y-1500000), seg))
+            # TODO: Hawaii has small small tails that appear to cover the
+            # the western U.S.  Never knew!
             color = rgb2hex(colors[statenames[nshape]]) 
             poly = Polygon(seg,facecolor=color,edgecolor='black')
             ax.add_patch(poly)
@@ -122,8 +131,9 @@ def make_map(state_data = popdensity, title='Population Density') :
     # Hackish way to define color map
     tmp=np.linspace(vmin, vmax,100)
     im = plt.imshow(np.array([tmp, tmp]), cmap=cmap)
-    plt.colorbar(im)
+    plt.colorbar(im, fraction=0.046, pad=0.04)
     plt.savefig(title + '.png')
+    plt.savefig(title + '.pdf')
     #plt.axis([])
     plt.show()
 
